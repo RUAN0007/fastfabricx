@@ -7,11 +7,12 @@ SPDX-License-Identifier: Apache-2.0
 package kvledger
 
 import (
+	"sync"
+	"time"
+
 	"github.com/hyperledger/fabric/fastfabric/config"
 	ffgossip "github.com/hyperledger/fabric/fastfabric/gossip"
 	"github.com/hyperledger/fabric/protos/gossip"
-	"sync"
-	"time"
 
 	"github.com/hyperledger/fabric/common/flogging"
 	commonledger "github.com/hyperledger/fabric/common/ledger"
@@ -360,6 +361,8 @@ func (l *kvLedger) CommitWithPvtData(pvtdataAndBlock *ledger.BlockAndPvtData) er
 		elapsedCommitState,
 		txstatsInfo,
 	)
+	now := time.Now().UnixNano() / 1000 / 1000 / 1000
+	logger.Infof("Commit block %d at %d", block.Header.Number, now)
 	return nil
 }
 

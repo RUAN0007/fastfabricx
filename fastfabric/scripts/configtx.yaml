@@ -2,7 +2,7 @@ Organizations:
   - &OrdererOrg
     Name: OrdererOrg
     ID: OrdererMSP
-    MSPDir: crypto-config/ordererOrganizations/ORDERER_DOMAIN/msp
+    MSPDir: crypto-config/ordererOrganizations/example.com/msp
     Policies:
       Readers:
         Type: Signature
@@ -16,7 +16,7 @@ Organizations:
   - &Org1
     Name: Org1MSP
     ID: Org1MSP
-    MSPDir: crypto-config/peerOrganizations/PEER_DOMAIN/msp
+    MSPDir: crypto-config/peerOrganizations/example.com/msp
     Policies:
       Readers:
         Type: Signature
@@ -28,7 +28,7 @@ Organizations:
         Type: Signature
         Rule: "OR('Org1MSP.admin')"
     AnchorPeers:
-      - Host: FAST_PEER_ADDRESS
+      - Host: ciidaa
         Port: 7051
 
 Capabilities:
@@ -58,12 +58,18 @@ Application: &ApplicationDefaults
     <<: *ApplicationCapabilities
 
 Orderer: &OrdererDefaults
-  OrdererType: solo
+  OrdererType: kafka
   Addresses:
-  - ORDERER_ADDRESS:7050
+  - slave-30:7050
+  - slave-31:7050
   BatchTimeout: 2s
+  Kafka:
+    # Brokers: A list of Kafka brokers to which the orderer connects
+    # NOTE: Use IP:port notation
+    Brokers:
+        - slave-40:9092
   BatchSize:
-    MaxMessageCount: 100
+    MaxMessageCount: 200
     AbsoluteMaxBytes: 98 MB
     PreferredMaxBytes: 5120 KB
   Organizations:

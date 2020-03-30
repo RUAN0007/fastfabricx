@@ -23,18 +23,18 @@ if [[ ! -z $STORAGE_ADDRESS ]]; then
     storage="- Hostname: ${STORAGE_ADDRESS}\n    ${storage}"
 fi
 
-(cat crypto-config.yaml.bak | sed "s/ORDERER_DOMAIN/$ORDERER_DOMAIN/g" | sed "s/ORDERER_ADDRESS/$ORDERER_ADDRESS/g"| sed "s/PEER_DOMAIN/$PEER_DOMAIN/g"| sed "s/FAST_PEER_ADDRESS/$FAST_PEER_ADDRESS/g"| sed "s/ENDORSERS/$endorsers/g"| sed "s/STORAGE/$storage/g") > crypto-config.yaml
+(cat crypto-config.yaml.bak | sed "s/ORDERER_DOMAIN/$ORDERER_DOMAIN/g" | sed "s/ORDERER_ADDRESS1/$ORDERER_ADDRESS1/g" | sed "s/ORDERER_ADDRESS2/$ORDERER_ADDRESS2/g"| sed "s/PEER_DOMAIN/$PEER_DOMAIN/g"| sed "s/FAST_PEER_ADDRESS/$FAST_PEER_ADDRESS/g"| sed "s/ENDORSERS/$endorsers/g"| sed "s/STORAGE/$storage/g") > crypto-config.yaml
 
 if [[ ! -f configtx.yaml.bak ]]; then
     cp configtx.yaml configtx.yaml.bak
 fi
 
-(cat configtx.yaml.bak | sed "s/ORDERER_DOMAIN/$ORDERER_DOMAIN/g" | sed "s/ORDERER_ADDRESS/$ORDERER_ADDRESS/g"| sed "s/PEER_DOMAIN/$PEER_DOMAIN/g"| sed "s/FAST_PEER_ADDRESS/$FAST_PEER_ADDRESS/g") > configtx.yaml
+(cat configtx.yaml.bak | sed "s/ORDERER_DOMAIN/$ORDERER_DOMAIN/g" | sed "s/ORDERER_ADDRESS2/$ORDERER_ADDRESS2/g" | sed "s/ORDERER_ADDRESS1/$ORDERER_ADDRESS1/g"| sed "s/PEER_DOMAIN/$PEER_DOMAIN/g"| sed "s/FAST_PEER_ADDRESS/$FAST_PEER_ADDRESS/g") > configtx.yaml
 
 if [[ -d ./crypto-config ]]; then rm -r ./crypto-config; fi
 if [[ -d ./channel-artifacts ]]; then rm -r ./channel-artifacts; fi
 mkdir channel-artifacts
-./bin/cryptogen generate --config=crypto-config.yaml
-./bin/configtxgen -configPath ./ -outputBlock ./channel-artifacts/genesis.block -profile OneOrgOrdererGenesis -channelID ${CHANNEL}-system-channel
-./bin/configtxgen -configPath ./ -outputCreateChannelTx ./channel-artifacts/channel.tx -profile OneOrgChannel -channelID ${CHANNEL}
-./bin/configtxgen -configPath ./ -outputAnchorPeersUpdate ./channel-artifacts/anchor_peer.tx -profile OneOrgChannel -asOrg Org1MSP -channelID ${CHANNEL}
+cryptogen generate --config=crypto-config.yaml
+configtxgen -configPath ./ -outputBlock ./channel-artifacts/genesis.block -profile OneOrgOrdererGenesis -channelID ${CHANNEL}-system-channel
+configtxgen -configPath ./ -outputCreateChannelTx ./channel-artifacts/channel.tx -profile OneOrgChannel -channelID ${CHANNEL}
+configtxgen -configPath ./ -outputAnchorPeersUpdate ./channel-artifacts/anchor_peer.tx -profile OneOrgChannel -asOrg Org1MSP -channelID ${CHANNEL}

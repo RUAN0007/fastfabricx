@@ -13,8 +13,9 @@ export CORE_PEER_GOSSIP_USELEADERELECTION=false
 export CORE_PEER_GOSSIP_ORGLEADER=true
 
 
-rm /var/hyperledger/production/* -r # clean up data from previous runs
-(cd ${FABRIC_ROOT}/peer/ && go install)
+rm ${CORE_PEER_FILESYSTEMPATH} -r # clean up data from previous runs
+# rm /var/hyperledger/production/* -r # clean up data from previous runs
+# (cd ${FABRIC_ROOT}/peer/ && go install)
 
 # peer node start can be run without the storageAddr. In that case those modules will not be decoupled to different nodes
 s=""
@@ -24,5 +25,5 @@ then
     s="--storageAddr $(get_correct_peer_address ${STORAGE_ADDRESS}):10000"
 fi
 
-peer node start ${s}
+fastpeer node start ${s} > /data/ruanpc/fastpeer_log 2>&1 &
 

@@ -1,15 +1,19 @@
 OrdererOrgs:
 - Name: Orderer
-  Domain: ORDERER_DOMAIN
+  Domain: example.com
   Specs:
-    - Hostname: ORDERER_ADDRESS
+    - Hostname: slave-30
+    - Hostname: slave-31
 PeerOrgs:
 - Name: Org1
-  Domain: PEER_DOMAIN
+  Domain: example.com
   EnableNodeOUs: true
   Specs:
-    - Hostname: FAST_PEER_ADDRESS
-    ENDORSERS
-    STORAGE
+    - Hostname: ciidaa
+    - Hostname: slave-6
+    - Hostname: slave-5
+    
+    - Hostname: slave-7
+    
   Users:
     Count: 1

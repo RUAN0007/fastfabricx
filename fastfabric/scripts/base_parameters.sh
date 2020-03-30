@@ -6,13 +6,14 @@ export FABRIC_CFG_PATH=${FABRIC_ROOT}/fastfabric/scripts #change this if you wan
 source $FABRIC_CFG_PATH/custom_parameters.sh
 
 get_correct_address () {
-    if [[ $1 != "localhost" ]]
-    then
-        addr=$1.$2
-    else
-        addr=$1
-    fi
+    # if [[ $1 != "localhost" ]]
+    # then
+    #     addr=$1.$2
+    # else
+    #     addr=$1
+    # fi
 
+    addr=$1
     echo ${addr}
 }
 
@@ -34,9 +35,12 @@ get_endorsers(){
 export CORE_PEER_LISTENADDRESS=0.0.0.0:7051
 export CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:7052
 export CORE_PEER_LOCALMSPID=Org1MSP
+export CORE_PEER_FILESYSTEMPATH=/data/ruanpc/hyperledger/fastfabric/peer
 
 export ORDERER_GENERAL_LISTENADDRESS=0.0.0.0
 export ORDERER_GENERAL_GENESISMETHOD=file
-export ORDERER_GENERAL_LEDGERTYPE=ram
+# export ORDERER_GENERAL_LEDGERTYPE=ram
 export ORDERER_GENERAL_GENESISFILE=${FABRIC_CFG_PATH}/channel-artifacts/genesis.block
 export ORDERER_GENERAL_LOCALMSPID=OrdererMSP
+export ORDERER_GENERAL_LEDGERTYPE=file
+export ORDERER_FILELEDGER_LOCATION=/data/ruanpc/hyperledger/fastfabric/orderer

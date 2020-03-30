@@ -99,6 +99,8 @@ func (v *Validator) ValidateAndPrepareBatch(block *internal.Block, doMVCCValidat
 	}
 
 	updates := internal.NewPubAndHashUpdates()
+	invalidCount := 0
+	totalCount := 0
 	for _, tx := range block.Txs {
 		var validationCode peer.TxValidationCode
 		var err error
@@ -114,8 +116,12 @@ func (v *Validator) ValidateAndPrepareBatch(block *internal.Block, doMVCCValidat
 		} else {
 			logger.Warningf("Block [%d] Transaction index [%d] TxId [%s] marked as invalid by state validator. Reason code [%s]",
 				block.Num, tx.IndexInBlock, tx.ID, validationCode.String())
+			invalidCount++
 		}
+		totalCount++
 	}
+	height := block.Num
+	logger.Infof("Block %d has %d invalid out of %d txns. ", height, invalidCount, totalCount)
 	return updates, nil
 }
 
