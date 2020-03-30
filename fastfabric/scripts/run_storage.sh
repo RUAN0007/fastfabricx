@@ -17,4 +17,8 @@ rm ${CORE_PEER_FILESYSTEMPATH} -r # clean up data from previous runs
 # rm /var/hyperledger/production/* -r # clean up data from previous runs
 # (cd ${FABRIC_ROOT}/peer/ && go install)
 
-fastpeer node start -s --storageAddr $p_addr:10000  > /data/ruanpc/faststorage_log 2>&1 &
+if [ "$#" -eq 1 ]; then
+    SCHEDULER_TYPE=sharp fastpeerX node start -s --storageAddr $p_addr:10000  > /data/ruanpc/faststorage_log 2>&1 &
+else
+    fastpeer node start -s --storageAddr $p_addr:10000  > /data/ruanpc/faststorage_log 2>&1 &
+fi

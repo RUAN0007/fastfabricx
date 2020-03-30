@@ -211,6 +211,19 @@
   version = "v1.1.0"
 
 [[projects]]
+  digest = "1:740eced2b435811ca4eb8c6e638cffdc634e6f4b925242118df116b79a0a0be5"
+  name = "github.com/emirpasic/gods"
+  packages = [
+    "containers",
+    "lists",
+    "lists/arraylist",
+    "utils",
+  ]
+  pruneopts = "NUT"
+  revision = "1615341f118ae12f353cc8a983f35b584342c9b3"
+  version = "v1.12.0"
+
+[[projects]]
   digest = "1:d0a3e7afbdc348a36faa023b59faf86a60404037f101bb4b8cc4ae63d8b94be1"
   name = "github.com/fsouza/go-dockerclient"
   packages = [
@@ -612,6 +625,14 @@
   version = "v1.1.0"
 
 [[projects]]
+  digest = "1:96ea40e8fab1400b769ff9669dd7f7de613c3a1943dd7f451c4ccbb05115bcaa"
+  name = "github.com/spaolacci/murmur3"
+  packages = ["."]
+  pruneopts = "NUT"
+  revision = "9f5d223c60793748f04a9d5b4b4eacddfc1f755d"
+  version = "v1.1"
+
+[[projects]]
   digest = "1:3fa7947ca83b98ae553590d993886e845a4bff19b7b007e869c6e0dd3b9da9cd"
   name = "github.com/spf13/cast"
   packages = ["."]
@@ -718,6 +739,14 @@
   pruneopts = "NUT"
   revision = "e553b05586428962bf7058d1044519d87ca72d74"
   version = "v1.1.9"
+
+[[projects]]
+  digest = "1:8620cb07821e255e2d7c63a4b7877db5bee2b93020bb46292ec40853fa314d00"
+  name = "github.com/willf/bloom"
+  packages = ["."]
+  pruneopts = "NUT"
+  revision = "54e3b963ee1652b06c4562cb9b6020ebc6e36e59"
+  version = "v2.0.3"
 
 [[projects]]
   digest = "1:7994f0511ea39eb049909df41301aabf5e6289b97c1084f7cc8c351d765469e1"
@@ -960,6 +989,7 @@
     "github.com/Shopify/sarama",
     "github.com/Shopify/sarama/mocks",
     "github.com/davecgh/go-spew/spew",
+    "github.com/emirpasic/gods/lists/arraylist",
     "github.com/fsouza/go-dockerclient",
     "github.com/go-kit/kit/metrics",
     "github.com/go-kit/kit/metrics/prometheus",
@@ -1009,6 +1039,7 @@
     "github.com/tedsuo/ifrit/ginkgomon",
     "github.com/tedsuo/ifrit/grouper",
     "github.com/willf/bitset",
+    "github.com/willf/bloom",
     "go.etcd.io/etcd/etcdserver/api/snap",
     "go.etcd.io/etcd/pkg/fileutil",
     "go.etcd.io/etcd/raft",

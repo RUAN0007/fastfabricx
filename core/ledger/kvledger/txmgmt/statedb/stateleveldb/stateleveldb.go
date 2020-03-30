@@ -7,9 +7,9 @@ package stateleveldb
 
 import (
 	"bytes"
-	ffstatedb "github.com/hyperledger/fabric/fastfabric/statedb"
 
 	"github.com/hyperledger/fabric/common/flogging"
+	"github.com/hyperledger/fabric/common/ledger/util/leveldbhelper"
 	"github.com/hyperledger/fabric/core/ledger/kvledger/txmgmt/statedb"
 	"github.com/hyperledger/fabric/core/ledger/kvledger/txmgmt/version"
 	"github.com/hyperledger/fabric/core/ledger/ledgerconfig"
@@ -25,15 +25,15 @@ var savePointKey = []byte{0x00}
 
 // VersionedDBProvider implements interface VersionedDBProvider
 type VersionedDBProvider struct {
-	dbProvider *ffstatedb.Provider
+	dbProvider *leveldbhelper.Provider
 }
 
 // NewVersionedDBProvider instantiates VersionedDBProvider
 func NewVersionedDBProvider() *VersionedDBProvider {
 	dbPath := ledgerconfig.GetStateLevelDBPath()
 	logger.Debugf("constructing VersionedDBProvider dbPath=%s", dbPath)
-	return &VersionedDBProvider{dbProvider: ffstatedb.NewProvider(dbPath)}
-
+	dbProvider := leveldbhelper.NewProvider(&leveldbhelper.Conf{DBPath: dbPath})
+	return &VersionedDBProvider{dbProvider}
 }
 
 // GetDBHandle gets the handle to a named database
@@ -48,12 +48,12 @@ func (provider *VersionedDBProvider) Close() {
 
 // VersionedDB implements VersionedDB interface
 type versionedDB struct {
-	db     *ffstatedb.DBHandle
+	db     *leveldbhelper.DBHandle
 	dbName string
 }
 
 // newVersionedDB constructs an instance of VersionedDB
-func newVersionedDB(db *ffstatedb.DBHandle, dbName string) *versionedDB {
+func newVersionedDB(db *leveldbhelper.DBHandle, dbName string) *versionedDB {
 	return &versionedDB{db, dbName}
 }
 
@@ -83,6 +83,28 @@ func (vdb *versionedDB) GetState(namespace string, key string) (*statedb.Version
 	logger.Debugf("GetState(). ns=%s, key=%s", namespace, key)
 	compositeKey := constructCompositeKey(namespace, key)
 	dbVal, err := vdb.db.Get(compositeKey)
+	// dbVal, err := vdb.db.SnapshotGet(compositeKey)
+	if err != nil {
+		return nil, err
+	}
+	if dbVal == nil {
+		return nil, nil
+	}
+	return decodeValue(dbVal)
+}
+
+func (vdb *versionedDB) RetrieveLatestSnapshot() uint64 {
+	return vdb.db.RetrieveLatestSnapshot()
+}
+
+func (vdb *versionedDB) ReleaseSnapshot(snapshot uint64) bool {
+	return vdb.db.ReleaseSnapshot(snapshot)
+}
+
+func (vdb *versionedDB) GetSnapshotState(snapshot uint64, namespace string, key string) (*statedb.VersionedValue, error) {
+	compositeKey := constructCompositeKey(namespace, key)
+	// dbVal, err := vdb.db.Get(compositeKey)
+	dbVal, err := vdb.db.SnapshotGet(snapshot, compositeKey)
 	if err != nil {
 		return nil, err
 	}
@@ -166,8 +188,9 @@ func (vdb *versionedDB) ExecuteQueryWithMetadata(namespace, query string, metada
 
 // ApplyUpdates implements method in VersionedDB interface
 func (vdb *versionedDB) ApplyUpdates(batch *statedb.UpdateBatch, height *version.Height) error {
-	dbBatch := ffstatedb.NewUpdateBatch()
+	dbBatch := leveldbhelper.NewUpdateBatch()
 	namespaces := batch.GetUpdatedNamespaces()
+	batchSize := 0
 	for _, ns := range namespaces {
 		updates := batch.GetUpdates(ns)
 		for k, vv := range updates {
@@ -182,18 +205,15 @@ func (vdb *versionedDB) ApplyUpdates(batch *statedb.UpdateBatch, height *version
 					return err
 				}
 				dbBatch.Put(compositeKey, encodedVal)
+				batchSize += len(compositeKey) + len(encodedVal)
 			}
 		}
 	}
-	// Record a savepoint at a given height
-	// If a given height is nil, it denotes that we are committing pvt data of old blocks.
-	// In this case, we should not store a savepoint for recovery. The lastUpdatedOldBlockList
-	// in the pvtstore acts as a savepoint for pvt data.
-	if height != nil {
-		dbBatch.Put(savePointKey, height.ToBytes())
-	}
+	dbBatch.Put(savePointKey, height.ToBytes())
+	logger.Debugf("Block %d: Applied batch size: %d", height.BlockNum, batchSize)
 	// Setting snyc to true as a precaution, false may be an ok optimization after further testing.
-	if err := vdb.db.WriteBatch(dbBatch, true); err != nil {
+	// if err := vdb.db.WriteBatch(dbBatch, true); err != nil {
+	if err := vdb.db.SnapshotWriteBatch(dbBatch, height.BlockNum, true); err != nil {
 		return err
 	}
 	return nil

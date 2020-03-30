@@ -25,5 +25,9 @@ then
     s="--storageAddr $(get_correct_peer_address ${STORAGE_ADDRESS}):10000"
 fi
 
-fastpeer node start ${s} > /data/ruanpc/fastpeer_log 2>&1 &
+if [ "$#" -eq 1 ]; then
+    SCHEDULER_TYPE=sharp fastpeerX node start ${s} > /data/ruanpc/fastpeer_log 2>&1 &
+else
+    fastpeer node start ${s} > /data/ruanpc/fastpeer_log 2>&1 &
+fi
 

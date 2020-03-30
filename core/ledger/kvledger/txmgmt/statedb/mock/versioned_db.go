@@ -189,6 +189,18 @@ func (fake *VersionedDB) GetState(namespace string, key string) (*statedb.Versio
 	return fake.getStateReturns.result1, fake.getStateReturns.result2
 }
 
+func (fake *VersionedDB) RetrieveLatestSnapshot() uint64 {
+	return 0
+}
+
+func (fake *VersionedDB) ReleaseSnapshot(snapshot uint64) bool {
+	return false
+}
+
+func (fake *VersionedDB) GetSnapshotState(snapshot uint64, namespace string, key string) (*statedb.VersionedValue, error) {
+	return nil, nil
+}
+
 func (fake *VersionedDB) GetStateCallCount() int {
 	fake.getStateMutex.RLock()
 	defer fake.getStateMutex.RUnlock()

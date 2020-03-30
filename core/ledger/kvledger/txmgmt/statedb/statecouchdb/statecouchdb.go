@@ -67,6 +67,18 @@ func (provider *VersionedDBProvider) GetDBHandle(dbName string) (statedb.Version
 	return vdb, nil
 }
 
+func (vdb *VersionedDB) RetrieveLatestSnapshot() uint64 {
+	return 0
+}
+
+func (vdb *VersionedDB) ReleaseSnapshot(snapshot uint64) bool {
+	return false
+}
+
+func (vdb *VersionedDB) GetSnapshotState(snapshot uint64, namespace string, key string) (*statedb.VersionedValue, error) {
+	return nil, nil
+}
+
 // Close closes the underlying db instance
 func (provider *VersionedDBProvider) Close() {
 	// No close needed on Couch
